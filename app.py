@@ -9,7 +9,7 @@ st.set_page_config(layout="wide")
 @st.cache
 
 def load_data():
-    df_final = pd.read_csv('df_final_topics.csv')
+    df_final = pd.read_csv('./data/processed/df_final_topics.csv')
 
     df_final['text'] = df_final['text'].astype('str')
     df_final['text_clean'] = df_final['text_clean'].astype('str')
@@ -66,3 +66,11 @@ col1.plotly_chart(fig1, use_container_width=True)
 fig2 = px.line(indices, x=indices.index, y="freq_DEPUC",title="DEPUC frequency of tweets", width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 #fig.show()
 col2.plotly_chart(fig2, use_container_width=True)
+
+
+
+
+st.subheader('References')
+
+st.write('Baker, S.R., Bloom, N. and Davis, S.J. (2016). Measuring economic policy uncertainty. The Quarterly Journal of Economics, Volume 131, Issue 4.')
+st.write('Becerra, J.S. and Stagner A. (2020). Twitter-based economic policy uncertainty index for Chile. Working Paper 883, Banco Central de Chile.')
