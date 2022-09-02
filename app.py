@@ -32,6 +32,3 @@ fig.show()
 fig = px.line(indices, x=indices.index, y="freq_DEPUC",title="DEPUC frequency of tweets", width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 fig.show()
 
-# Heroku uses the last version of python, but it conflicts with 
-# some dependencies. Low your version by adding a runtime.txt file
-# https://stackoverflow.com/questions/71712258/
