@@ -5,7 +5,7 @@ import streamlit as st
 
 @st.cache
 
-df_final = pd.read_csv('df_final_topics')
+df_final = pd.read_csv('df_final_topics.csv')
 
 df_final['text'] = df_final['text'].astype('str')
 df_final['text_clean'] = df_final['text_clean'].astype('str')
