@@ -1,12 +1,19 @@
 import pandas as pd 
 import matplotlib.pyplot as plt 
 import plotly.express as px
-import plotly.io as pio 
+import plotly.io as pio
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots 
 import streamlit as st
 
 st.set_page_config(layout="wide")
 
-@st.cache
+@st.cache(allow_output_mutation=True)
+
+
+## Read all dfs
+
+# df final with topics 
 
 def load_data():
     df_final = pd.read_csv('./data/processed/df_final_topics.csv')
@@ -23,19 +30,17 @@ def load_data():
 
 df_final = load_data()
 
-#Intro visualizations
-
-df_plot_day=(df_final
-        .assign(day=df_final['date'].dt.day_of_week)
-        .groupby(['medio','day'])
-        .agg(count=('medio','count'))
-        .assign(rate=lambda df_interim: df_interim['count']/df_interim.groupby('medio')['count'].sum())
-        .reset_index())
+# sentiment prediction
+sent_pred = pd.read_csv('./data/processed/Sent_pred.csv')
 
 
-# Uncertainty indices
-indices=pd.DataFrame(df_final.groupby('date_short')['count_DEPU'].mean()).rename(columns={'count_DEPU':'freq_DEPU'})
-indices['freq_DEPUC']=pd.DataFrame(df_final.groupby('date_short')['count_DEPUC'].mean()).rename(columns={'count_DEPUC':'freq_DEPUC'})
+# df with topics for all tweets
+topics_words = pd.read_csv('./data/processed/Tabla_1.csv')
+
+# words table
+tabla_terminos = pd.read_csv('./data/processed/tabla_terminos.csv', index_col=0)
+
+
 
 
 
@@ -55,6 +60,13 @@ but many economic indicators are published with considerable lags. Natural langu
 summarize information from the social media Twitter and contribute to the decision-making process with timeliness 
 indicators.''')
 
+# df to plot frequency of tweets by day
+df_plot_day=(df_final
+        .assign(day=df_final['date'].dt.day_of_week)
+        .groupby(['medio','day'])
+        .agg(count=('medio','count'))
+        .assign(rate=lambda df_interim: df_interim['count']/df_interim.groupby('medio')['count'].sum())
+        .reset_index())
 
 pio.templates.default = "plotly_white" # template for plotly express plots
 
@@ -66,36 +78,232 @@ col1.plotly_chart(fig1, use_container_width=True)
 fig2 = px.line(df_plot_day, x="day", y="rate", color='medio', title='Frequency of tweets per media by day', width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col2.plotly_chart(fig2, use_container_width=True)
 
-###############################################################################################################333
+###############################################################################################################
 
 
 st.subheader('Uncertainty indexes')
 
-
-st.write('Aca capaz podemos hablar un poco de como construimos los indicadores de incertidumbre y que usamos los terminos de la tabla de abajo')
-
 # Tabla con terminos
-tabla_terminos = pd.read_csv('tabla_terminos.csv', index_col=0)
 st.dataframe(tabla_terminos)
 
+# Uncertainty indices
+indices_day=pd.DataFrame(df_final.groupby('date_short')['count_DEPU'].mean()).rename(columns={'count_DEPU':'freq_DEPU'})
+indices_day['freq_DEPUC']=pd.DataFrame(df_final.groupby('date_short')['count_DEPUC'].mean()).rename(columns={'count_DEPUC':'freq_DEPUC'})
 
-# Graficos
+
+
+# Plots
 col1, col2 = st.columns(2)
 
-fig1 = px.line(indices, x=indices.index, y="freq_DEPU",title="DEPU frequency of tweets", width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+fig1 = px.line(indices_day, x=indices_day.index, y="freq_DEPU",title="DEPU frequency of tweets", width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col1.plotly_chart(fig1, use_container_width=True)
 
 
-fig2 = px.line(indices, x=indices.index, y="freq_DEPUC",title="DEPUC frequency of tweets", width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+fig2 = px.line(indices_day, x=indices_day.index, y="freq_DEPUC",title="DEPUC frequency of tweets", width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col2.plotly_chart(fig2, use_container_width=True)
 
 
-st.subheader('Sentiments and emotions')
+###############################################################################################################
+
+st.subheader('Sentiment analysis')
+
+# Add colum with main sentiment
+df_final['Sentiment']=sent_pred['Sentiment'] 
+
+# Frequency of sentiments by day
+df_final['Neutral'] = ''
+df_final['Neutral'] = ['1' if x == 'NEU' else '0' for x in df_final['Sentiment']]
+
+df_final['Negative'] = ''
+df_final['Negative'] = ['1' if x == 'NEG' else '0' for x in df_final['Sentiment']]
+
+df_final['Positive'] = ''
+df_final['Positive'] = ['1' if x == 'POS' else '0' for x in df_final['Sentiment']]
+
+for var in ['Neutral', 'Negative', 'Positive']:
+  df_final[var] = df_final[var].astype(int)
+
+
+# DEPU
+sent_depu=pd.DataFrame(df_final[df_final['count_DEPU']==1].groupby('date_short')['Neutral'].mean()).rename(columns={'Neutral':'freq_neutral'})
+sent_depu['freq_negative']=pd.DataFrame(df_final[df_final['count_DEPU']==1].groupby('date_short')['Negative'].mean()).rename(columns={'Negative':'freq_negative'})
+sent_depu['freq_positive']=pd.DataFrame(df_final[df_final['count_DEPU']==1].groupby('date_short')['Positive'].mean()).rename(columns={'Positive':'freq_positive'})
+
+
+# DEPUC
+sent_depuc=pd.DataFrame(df_final[df_final['count_DEPUC']==1].groupby('date_short')['Neutral'].mean()).rename(columns={'Neutral':'freq_neutral'})
+sent_depuc['freq_negative']=pd.DataFrame(df_final[df_final['count_DEPUC']==1].groupby('date_short')['Negative'].mean()).rename(columns={'Negative':'freq_negative'})
+sent_depuc['freq_positive']=pd.DataFrame(df_final[df_final['count_DEPUC']==1].groupby('date_short')['Positive'].mean()).rename(columns={'Positive':'freq_positive'})
+
+
+
+# Plots
+col1, col2 = st.columns(2)
+
+fig1 = go.Figure(data=[
+    go.Bar(name='Negative', x=sent_depu.index, y=sent_depu['freq_negative']),
+    go.Bar(name='Positive', x=sent_depu.index, y=sent_depu['freq_positive']),
+    go.Bar(name='Neutral', x=sent_depu.index, y=sent_depu['freq_neutral'])
+])
+
+# Change the bar mode
+fig1.update_layout(barmode='stack', title_text='Sentiment of tweets over time DEPU')
+col1.plotly_chart(fig1, use_container_width=True)
+
+
+fig2 = go.Figure(data=[
+    go.Bar(name='Negative', x=sent_depuc.index, y=sent_depuc['freq_negative']),
+    go.Bar(name='Positive', x=sent_depuc.index, y=sent_depuc['freq_positive']),
+    go.Bar(name='Neutral', x=sent_depuc.index, y=sent_depuc['freq_neutral'])
+])
+
+# Change the bar mode
+fig2.update_layout(barmode='stack', title_text='Sentiment of tweets over time DEPUC')
+col2.plotly_chart(fig2, use_container_width=True)
+
 
 
 st.subheader('Topics')
 
+# DEPU's tweets without considering topic -1
+df_final_depu=df_final[(df_final['count_DEPU']==1) & (df_final['Topic']!=-1)]
 
+# Top 8 DEPU topics
+Top_8_DEPU=pd.DataFrame(df_final_depu['Topic'].value_counts(normalize=True)).index.values[:8]
+
+
+# DEPUC's tweets without considering topic -1
+df_final_depuc=df_final[(df_final['count_DEPUC']==1) & (df_final['Topic']!=-1)]
+
+# Top 8 DEPUC topics
+Top_8_DEPUC=pd.DataFrame(df_final_depuc['Topic'].value_counts(normalize=True)).index.values[:8]
+
+
+
+# Words in topics
+
+# Plots
+col1, col2 = st.columns(2)
+
+topics_words[topics_words['topic'].isin(Top_8_DEPU)].reset_index(drop=True)
+fig1 = make_subplots(rows=2, cols=4,
+                    subplot_titles=tuple(['Topic '+str(i) for i in Top_8_DEPU]))
+
+for i,t in enumerate(Top_8_DEPU):
+  fig1.add_trace(
+      go.Bar(x=topics_words[topics_words['topic']==t].word, y=topics_words[topics_words['topic']==t].prob),
+      row=(i//4)+1, col=(i%4)+1
+      
+      )
+  
+fig1.update_layout(height=800, width=1000, title_text="Words in topics DEPU",showlegend=False)
+col1.plotly_chart(fig1, use_container_width=True)
+
+topics_words[topics_words['topic'].isin(Top_8_DEPUC)].reset_index(drop=True)
+fig2 = make_subplots(rows=2, cols=4,
+                    subplot_titles=tuple(['Topic '+str(i) for i in Top_8_DEPUC]))
+
+for i,t in enumerate(Top_8_DEPUC):
+  fig2.add_trace(
+      go.Bar(x=topics_words[topics_words['topic']==t].word, y=topics_words[topics_words['topic']==t].prob),
+      row=(i//4)+1, col=(i%4)+1
+      
+      )
+  
+fig2.update_layout(height=800, width=1000, title_text="Words in topics DEPUC",showlegend=False)
+col2.plotly_chart(fig2, use_container_width=True)
+
+
+# Heatmaps: frequency of topics by medio
+
+def df_to_plotly(df):
+    return {'z': df.values.tolist(),
+            'x': df.columns.tolist(),
+            'y': df.index.tolist()}
+
+depu_crosstab=pd.crosstab(df_final_depu[df_final_depu['Topic'].isin(Top_8_DEPU)]['medio'],df_final_depu[df_final_depu['Topic'].isin(Top_8_DEPU)]['Topic'],normalize='index')
+depuc_crosstab=pd.crosstab(df_final_depuc[df_final_depuc['Topic'].isin(Top_8_DEPU)]['medio'],df_final_depuc[df_final_depuc['Topic'].isin(Top_8_DEPUC)]['Topic'],normalize='index')
+
+# Plots
+
+col1, col2 = st.columns(2)
+
+fig1 = go.Figure(data=go.Heatmap(df_to_plotly(depu_crosstab)))
+fig1.update_xaxes(type='category')
+fig1.update_layout(title_text='Heatmap topics per medio DEPU')
+col1.plotly_chart(fig1, use_container_width=True)
+
+fig2 = go.Figure(data=go.Heatmap(df_to_plotly(depuc_crosstab)))
+fig2.update_xaxes(type='category')
+fig2.update_layout(title_text='Heatmap topics per medio DEPU')
+col2.plotly_chart(fig2, use_container_width=True)
+
+
+# Topics over time
+
+# DEPU
+
+# Create dummies for topics in depu dataframe
+
+topic_depu_dummies= pd.get_dummies(df_final_depu["Topic"])
+
+# df with dummies of topics
+listDF = []
+for i in Top_8_DEPU:  
+    listDF.append(topic_depu_dummies[i])
+listDF=pd.DataFrame(listDF)
+listDF=listDF.T
+
+# add dummies to df depu
+df_final_depu=pd.concat([df_final_depu,listDF], axis=1)
+
+# create dataframe with topics frequency by day
+freq_topics_depu=pd.DataFrame()
+for i in Top_8_DEPU:
+  new_col=('Topic_'+str(i))
+  freq_topics_depu[new_col]=df_final_depu.groupby('date_short')[i].sum()
+
+# centered moving average of topics frequency
+freq_topics_depu_mavg=freq_topics_depu.rolling(7,center=True).mean()
+
+
+
+# DEPUC
+
+# Create dummies for topics in depuc dataframe
+
+topic_depuc_dummies= pd.get_dummies(df_final_depuc["Topic"])
+
+# df with dummies of topics
+listDF = []
+for i in Top_8_DEPUC:  
+    listDF.append(topic_depuc_dummies[i])
+listDF=pd.DataFrame(listDF)
+listDF=listDF.T
+
+# add dummies to df depu
+df_final_depuc=pd.concat([df_final_depuc,listDF], axis=1)
+
+# create dataframe with topics frequency by day
+freq_topics_depuc=pd.DataFrame()
+for i in Top_8_DEPUC:
+  new_col=('Topic_'+str(i))
+  freq_topics_depuc[new_col]=df_final_depuc.groupby('date_short')[i].sum()
+
+# centered moving average of topics frequency
+freq_topics_depuc_mavg=freq_topics_depuc.rolling(7,center=True).mean()
+
+
+
+# Plots
+
+col1, col2 = st.columns(2)
+
+fig1 = px.line(freq_topics_depu_mavg,title="Topics over time DEPU", width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+col1.plotly_chart(fig1, use_container_width=True)
+
+fig2 = px.line(freq_topics_depuc_mavg,title="Topics over time DEPUC", width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+col2.plotly_chart(fig2, use_container_width=True)
 
 ##################################################################################################################3
 
