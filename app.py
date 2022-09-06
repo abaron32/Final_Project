@@ -54,7 +54,7 @@ st.title('Analysis of tweets from Uruguayan media press')
 st.subheader('Introduction')
 
 st.write('''In this project we build economic policy uncertainty indexes (following Becerra et al (2020) and Baker 
-et al (2016)) and analyze emotions, sentiments and topics using tweets from the media press in Uruguay between March 
+et al (2016)) and analyze sentiments and topics using tweets from the media press in Uruguay between March 
 2022 and August 2022. In order to make good policy decisions, policymakers need timeliness and frequent information, 
 but many economic indicators are published with considerable lags. Natural language processing techniques allows us to 
 summarize information from the social media Twitter and contribute to the decision-making process with timeliness 
