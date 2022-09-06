@@ -25,7 +25,7 @@ def load_data():
     df_final['date']=df_final['date'].astype('datetime64')
     df_final['date_short']=df_final['date_short'].astype('datetime64')
     df_final['medio']=df_final['medio'].astype('category')
-    
+    df_final['Month']=df_final['date'].dt.month
     return df_final
 
 df_final = load_data()
@@ -304,6 +304,156 @@ col1.plotly_chart(fig1, use_container_width=True)
 
 fig2 = px.line(freq_topics_depuc_mavg,title="Topics over time DEPUC", width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col2.plotly_chart(fig2, use_container_width=True)
+
+
+
+##############################################################################################################
+
+st.subheader('Validation of uncertainty index')
+
+## DEPU and DEPUC with standard deviation of ER expectation
+
+# Standard deviation of exchange rate expectation for next 12 months -- proxy of uncertainty
+Std_TC_12m=pd.DataFrame({'Month':['3','4','5','6','7','8'],'Std_Dv':[1.55,1.55,1.46,1.31,1.38,1.09]})
+Std_TC_12m['Month']=Std_TC_12m['Month'].astype('int64')
+Std_TC_12m.set_index('Month',inplace=True)
+
+# DEPU and DEPUC by month
+indices_month=pd.DataFrame(df_final.groupby('Month')['count_DEPU'].agg(['mean','std'])).rename(columns={'mean':'freq_DEPU','std':'std_DEPU'})
+indices_month[['freq_DEPUC','std_DEPUC']]=pd.DataFrame(df_final.groupby('Month')['count_DEPUC'].agg(['mean','std'])).rename(columns={'mean':'freq_DEPUC','count':'std_DEPUC'})
+
+# Standarized frequency
+indices_month['std_freq_DEPU']=indices_month['freq_DEPU']/indices_month['std_DEPU']
+indices_month['std_freq_DEPUC']=indices_month['freq_DEPUC']/indices_month['std_DEPUC']
+
+# Merge DEPU-DEPUC with std dev of ER
+indices_month=indices_month.merge(Std_TC_12m,left_index=True,right_index=True)
+
+# Plot
+
+fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+# Add traces
+fig.add_trace(
+    go.Line(x=indices_month.index, y=indices_month['std_freq_DEPU'], name="DEPU"),
+    secondary_y=False,
+)
+
+# Add traces
+fig.add_trace(
+    go.Line(x=indices_month.index, y=indices_month['std_freq_DEPUC'], name="DEPUC"),
+    secondary_y=False,
+)
+
+fig.add_trace(
+    go.Line(x=indices_month.index, y=indices_month['Std_Dv'], name="Std Dev ER 12m"),
+    secondary_y=True,
+)
+
+# Add figure title
+fig.update_layout(
+    title_text="Indexes and standard deviation of exchange rate expectation over time"
+)
+
+# Set x-axis title
+fig.update_xaxes(title_text="Month")
+
+# Set y-axes titles
+fig.update_yaxes(title_text="<b>Index</b>", secondary_y=False)
+fig.update_yaxes(title_text="<b>Std Dev ER 12m</b>", secondary_y=True)
+
+st.plotly_chart(fig,  use_container_width=True)
+
+
+## Topics and indexes
+
+# DEPU
+
+# Add column month to dataframe with indexes frequency
+freq_topics_depu['Month']=freq_topics_depu.index.month
+
+freq_topics_depu.reset_index(inplace=True,drop=True)
+freq_topics_depu.set_index('Month',inplace=True)
+
+# Monthly dataframe
+freq_topics_depu=freq_topics_depu.groupby('Month').sum()
+
+# Merge with exchange rate expectation
+freq_topics_depu=freq_topics_depu.merge(Std_TC_12m,left_index=True,right_index=True)
+
+
+# DEPUC
+
+# Add column month to dataframe with indexes frequency
+freq_topics_depuc['Month']=freq_topics_depuc.index.month
+
+freq_topics_depuc.reset_index(inplace=True,drop=True)
+freq_topics_depuc.set_index('Month',inplace=True)
+
+# Monthly dataframe
+freq_topics_depuc=freq_topics_depuc.groupby('Month').sum()
+
+# Merge with exchange rate expectation
+freq_topics_depuc=freq_topics_depuc.merge(Std_TC_12m,left_index=True,right_index=True)
+
+# Plots
+
+col1, col2 = st.columns(2)
+
+fig1 = make_subplots(specs=[[{"secondary_y": True}]])
+
+for i,t in enumerate(Top_8_DEPU):
+  fig1.add_trace(
+      go.Line(x=freq_topics_depu.index, y=freq_topics_depu['Topic_'+str(t)],
+              name='Topic_'+str(t)),
+      secondary_y=False
+      )
+
+fig1.add_trace(
+    go.Line(x=freq_topics_depu.index, y=freq_topics_depu['Std_Dv'], name="Std dev ER 12m"),
+    secondary_y=True,
+)
+
+# Add figure title
+fig1.update_layout(
+    title_text="Topics and standard deviation exchange rate expectation over time DEPU"
+)
+# Set x-axis title
+fig1.update_xaxes(title_text="Month")
+
+# Set y-axes titles
+fig1.update_yaxes(title_text="<b>Topics</b>", secondary_y=False)
+fig1.update_yaxes(title_text="<b>Std dev ER 12m</b>", secondary_y=True)
+
+col1.plotly_chart(fig1, use_container_width=True)
+
+fig2 = make_subplots(specs=[[{"secondary_y": True}]])
+
+for i,t in enumerate(Top_8_DEPUC):
+  fig2.add_trace(
+      go.Line(x=freq_topics_depuc.index, y=freq_topics_depuc['Topic_'+str(t)],
+              name='Topic_'+str(t)),
+      secondary_y=False
+      )
+
+fig2.add_trace(
+    go.Line(x=freq_topics_depuc.index, y=freq_topics_depuc['Std_Dv'], name="Std dev ER 12m"),
+    secondary_y=True,
+)
+
+# Add figure title
+fig2.update_layout(
+    title_text="Topics and standard deviation exchange rate expectation over time DEPUC"
+)
+# Set x-axis title
+fig2.update_xaxes(title_text="Month")
+
+# Set y-axes titles
+fig2.update_yaxes(title_text="<b>Topics</b>", secondary_y=False)
+fig2.update_yaxes(title_text="<b>Std dev ER 12m</b>", secondary_y=True)
+
+col2.plotly_chart(fig2, use_container_width=True)
+
 
 ##################################################################################################################3
 
