@@ -95,11 +95,19 @@ indices_day['freq_DEPUC']=pd.DataFrame(df_final.groupby('date_short')['count_DEP
 # Plots
 col1, col2 = st.columns(2)
 
-fig1 = px.line(indices_day, x=indices_day.index, y="freq_DEPU",title="DEPU frequency of tweets", width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+fig1 = px.line(indices_day, x=indices_day.index, y="freq_DEPU",title="DEPU frequency of tweets", labels={
+                     "date_short": "Date",
+                     "freq_DEPU": "DEPU"
+                 }, width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+
+
 col1.plotly_chart(fig1, use_container_width=True)
 
 
-fig2 = px.line(indices_day, x=indices_day.index, y="freq_DEPUC",title="DEPUC frequency of tweets", width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+fig2 = px.line(indices_day, x=indices_day.index, y="freq_DEPUC",title="DEPUC frequency of tweets", labels={
+                     "date_short": "Date",
+                     "freq_DEPUC": "DEPUC"
+                 }, width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col2.plotly_chart(fig2, use_container_width=True)
 
 
@@ -299,10 +307,16 @@ freq_topics_depuc_mavg=freq_topics_depuc.rolling(7,center=True).mean()
 
 col1, col2 = st.columns(2)
 
-fig1 = px.line(freq_topics_depu_mavg,title="Topics over time DEPU", width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+fig1 = px.line(freq_topics_depu_mavg,title="Topics over time DEPU", labels={
+                     "date_short": "Date",
+                     "value": "Count tweets"
+                 }, width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col1.plotly_chart(fig1, use_container_width=True)
 
-fig2 = px.line(freq_topics_depuc_mavg,title="Topics over time DEPUC", width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+fig2 = px.line(freq_topics_depuc_mavg,title="Topics over time DEPUC", labels={
+                     "date_short": "Date",
+                     "value": "Count tweets"
+                 },width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col2.plotly_chart(fig2, use_container_width=True)
 
 
@@ -460,5 +474,14 @@ col2.plotly_chart(fig2, use_container_width=True)
 
 st.subheader('References')
 
-st.write('Baker, S.R., Bloom, N. and Davis, S.J. (2016). Measuring economic policy uncertainty. The Quarterly Journal of Economics, Volume 131, Issue 4.')
-st.write('Becerra, J.S. and Stagner A. (2020). Twitter-based economic policy uncertainty index for Chile. Working Paper 883, Banco Central de Chile.')
+st.write('Baker, S.R., Bloom, N. and Davis, S.J. (2016). *Measuring economic policy uncertainty*. The Quarterly Journal of Economics, Volume 131, Issue 4.')
+
+st.write('Becerra, J.S. and Stagner A. (2020). *Twitter-based economic policy uncertainty index for Chile*. Working Paper 883, Banco Central de Chile.')
+
+st.write('Crocco, N., Dizioli,G.,Herrera, S. (2019). *Construcción de un indicador de incertidumbre económica en base a las noticias de prensa*. Posgrade dissertation. Facultad de Ingeniería. Universidad de la República.')
+
+st.write('Grootendorst, M. (2022). BERTopic: Neural topic modeling with a class-based TF-IDF procedure. arXiv preprint arXiv:2203. 05794.')
+
+st.write('Pérez, J. M., Furman, D. A., Alemany, L. A., & Luque, F. (2021). *RoBERTuito: a pre-trained language model for social media text in Spanish*. arXiv preprint arXiv:2111. 09453.')
+
+st.write('Pérez, J. M., Giudici, J. C., & Luque, F. (2021). pysentimiento: A Python Toolkit for Sentiment Analysis and SocialNLP tasks. arXiv [cs.CL]. Ανακτήθηκε από http://arxiv.org/abs/2106.09462')
