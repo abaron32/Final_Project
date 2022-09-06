@@ -75,7 +75,10 @@ col1, col2 = st.columns(2)
 fig1 = px.histogram(df_final, x="medio",title="Number of tweets per medio", width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col1.plotly_chart(fig1, use_container_width=True)
 
-fig2 = px.line(df_plot_day, x="day", y="rate", color='medio', title='Frequency of tweets per media by day', width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+fig2 = px.line(df_plot_day, x="day", y="rate", color='medio', title='Frequency of tweets per media by day', labels={
+                     "day": "Day of week",
+                     "rate": "Rate"
+                 },width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col2.plotly_chart(fig2, use_container_width=True)
 
 ###############################################################################################################
@@ -230,7 +233,7 @@ def df_to_plotly(df):
             'y': df.index.tolist()}
 
 depu_crosstab=pd.crosstab(df_final_depu[df_final_depu['Topic'].isin(Top_8_DEPU)]['medio'],df_final_depu[df_final_depu['Topic'].isin(Top_8_DEPU)]['Topic'],normalize='index')
-depuc_crosstab=pd.crosstab(df_final_depuc[df_final_depuc['Topic'].isin(Top_8_DEPU)]['medio'],df_final_depuc[df_final_depuc['Topic'].isin(Top_8_DEPUC)]['Topic'],normalize='index')
+depuc_crosstab=pd.crosstab(df_final_depuc[df_final_depuc['Topic'].isin(Top_8_DEPUC)]['medio'],df_final_depuc[df_final_depuc['Topic'].isin(Top_8_DEPUC)]['Topic'],normalize='index')
 
 # Plots
 
@@ -243,7 +246,7 @@ col1.plotly_chart(fig1, use_container_width=True)
 
 fig2 = go.Figure(data=go.Heatmap(df_to_plotly(depuc_crosstab)))
 fig2.update_xaxes(type='category')
-fig2.update_layout(title_text='Heatmap topics per medio DEPU')
+fig2.update_layout(title_text='Heatmap topics per medio DEPUC')
 col2.plotly_chart(fig2, use_container_width=True)
 
 
