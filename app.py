@@ -54,11 +54,22 @@ st.title('Analysis of tweets from Uruguayan media press')
 st.subheader('Introduction')
 
 st.write('''In this project we build economic policy uncertainty indexes (following Becerra et al (2020) and Baker 
-et al (2016)) and analyze sentiments and topics using tweets from the media press in Uruguay between March 
-2022 and August 2022. In order to make good policy decisions, policymakers need timeliness and frequent information, 
-but many economic indicators are published with considerable lags. Natural language processing techniques allows us to 
+et al (2016)) and analyze sentiments and topics using tweets from the media press in Uruguay from March 
+2022 to August 2022. In order to make good policy decisions, policymakers need timeliness and frequent information, 
+but many economic indicators are published with considerable lags and monthly or quarterly frequency. Natural language processing techniques allows us to 
 summarize information from the social media Twitter and contribute to the decision-making process with timeliness 
-indicators.''')
+indicators.
+
+The database includes 112.237 tweets from nine media press users from Uruguay.
+
+The preprocessing of the database included:
+- drop emojis, emoticons, mentions, urls
+- convert to lowercase
+- remove stopwords
+- drop symbols, punctuations and numbers
+- normalize text to NFC
+- lemmatization
+- replace some synonyms''')
 
 # df to plot frequency of tweets by day
 df_plot_day=(df_final
@@ -470,6 +481,19 @@ fig2.update_yaxes(title_text="<b>Topics</b>", secondary_y=False)
 fig2.update_yaxes(title_text="<b>Std dev ER 12m</b>", secondary_y=True)
 
 col2.plotly_chart(fig2, use_container_width=True)
+
+
+st.subheader('Agenda')
+
+st.write('''
+- Exhaustive analysis of words/terms to include in the index
+- Build longer indexes
+- Analysis of correlation with other proxies of uncertainty
+- Analysis of causality with economic variables
+- Analyze if the index is useful for economic variables prediction
+- Analysis of subcategories
+- Grid search of number of topics
+- Generate a real time index through the automatization of the complete process''')
 
 
 ##################################################################################################################3
