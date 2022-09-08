@@ -252,12 +252,12 @@ col1, col2 = st.columns(2)
 
 fig1 = go.Figure(data=go.Heatmap(df_to_plotly(depu_crosstab)))
 fig1.update_xaxes(type='category')
-fig1.update_layout(title_text='Heatmap topics per medio DEPU')
+fig1.update_layout(title_text='Heatmap DEPU topics by media')
 col1.plotly_chart(fig1, use_container_width=True)
 
 fig2 = go.Figure(data=go.Heatmap(df_to_plotly(depuc_crosstab)))
 fig2.update_xaxes(type='category')
-fig2.update_layout(title_text='Heatmap topics per medio DEPUC')
+fig2.update_layout(title_text='Heatmap DEPUC topics by media')
 col2.plotly_chart(fig2, use_container_width=True)
 
 
