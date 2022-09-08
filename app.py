@@ -49,7 +49,16 @@ tabla_terminos = pd.read_csv('./data/processed/tabla_terminos.csv', index_col=0)
 
 
 
-st.title('Analysis of tweets from Uruguayan media press')
+st.title('Uruguayan media press analysis')
+
+st.write('''Andrea Barón (andrea.baron32@gmail.com)
+
+Camila Delgado (camiladelgadoperez@gmail.com)
+
+Ana Sofía Samaniego (anasofiasama@gmail.com)''')
+
+
+st.write('Github link: https://github.com/abaron32/Final_Project')
 
 st.subheader('Introduction')
 
