@@ -321,13 +321,13 @@ freq_topics_depuc_mavg=freq_topics_depuc.rolling(7,center=True).mean()
 
 col1, col2 = st.columns(2)
 
-fig1 = px.line(freq_topics_depu_mavg,title="Topics over time DEPU", labels={
+fig1 = px.line(freq_topics_depu_mavg,title="Top 8 DEPU topics over time", labels={
                      "date_short": "Date",
                      "value": "Count tweets"
                  }, width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 col1.plotly_chart(fig1, use_container_width=True)
 
-fig2 = px.line(freq_topics_depuc_mavg,title="Topics over time DEPUC", labels={
+fig2 = px.line(freq_topics_depuc_mavg,title="Top 8 DEPUC topics over time", labels={
                      "date_short": "Date",
                      "value": "Count tweets"
                  },width=800, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
