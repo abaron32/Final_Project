@@ -11,4 +11,4 @@ The database includes 112.237 tweets from nine media press users from Uruguay an
 
 The results can be seen [here](https://tweets-media-press.herokuapp.com/). 
 
-This work was presented as the final project of the 4Geeks Academy Machine Learning and Artificial Intelligence bootcamp.
+This work was presented as the final project of the 4Geeks Academy Machine Learning Bootcamp.
