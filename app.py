@@ -107,23 +107,46 @@ indices_day['freq_DEPUC']=pd.DataFrame(df_final.groupby('date_short')['count_DEP
 
 
 # Plots
-col1, col2 = st.columns(2)
+#col1, col2 = st.columns(2)
 
-fig1 = px.line(indices_day, x=indices_day.index, y="freq_DEPU",title="DEPU frequency of tweets", labels={
-                     "date_short": "Date",
-                     "freq_DEPU": "DEPU"
-                 }, width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
-
-
-col1.plotly_chart(fig1, use_container_width=True)
+#fig1 = px.line(indices_day, x=indices_day.index, y="freq_DEPU",title="DEPU frequency of tweets", labels={
+#                     "date_short": "Date",
+#                     "freq_DEPU": "DEPU"
+#                 }, width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
 
 
-fig2 = px.line(indices_day, x=indices_day.index, y="freq_DEPUC",title="DEPUC frequency of tweets", labels={
-                     "date_short": "Date",
-                     "freq_DEPUC": "DEPUC"
-                 }, width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
-col2.plotly_chart(fig2, use_container_width=True)
+#col1.plotly_chart(fig1, use_container_width=True)
 
+
+#fig2 = px.line(indices_day, x=indices_day.index, y="freq_DEPUC",title="DEPUC frequency of tweets", labels={
+#                     "date_short": "Date",
+#                     "freq_DEPUC": "DEPUC"
+#                 }, width=1000, height=400, color_discrete_sequence=px.colors.qualitative.Dark24)
+#col2.plotly_chart(fig2, use_container_width=True)
+
+fig = make_subplots()
+
+# Add traces
+fig.add_trace(
+    go.Line(x=indices_day.index, y=indices_day['freq_DEPU'],name='Depu')
+)
+# Add traces
+fig.add_trace(
+    go.Line(x=indices_day.index, y=indices_day['freq_DEPUC'],name='Depuc')
+)
+
+# Add figure title
+fig.update_layout(
+    title_text="Uncertainty indexes over time"
+)
+
+# Set x-axis title
+fig.update_xaxes(title_text="Date")
+
+# Set y-axes titles
+fig.update_yaxes(title_text="<b>Frequency</b>")
+
+st.plotly_chart(fig,  use_container_width=False)
 
 ###############################################################################################################
 
@@ -390,7 +413,7 @@ fig.update_xaxes(title_text="Month")
 fig.update_yaxes(title_text="<b>Index</b>", secondary_y=False)
 fig.update_yaxes(title_text="<b>Std Dev ER 12m</b>", secondary_y=True)
 
-st.plotly_chart(fig,  use_container_width=True)
+st.plotly_chart(fig,  use_container_width=False)
 
 
 ## Topics and indexes
