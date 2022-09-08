@@ -169,7 +169,7 @@ fig1 = go.Figure(data=[
 ])
 
 # Change the bar mode
-fig1.update_layout(barmode='stack', title_text='Sentiment of tweets over time DEPU')
+fig1.update_layout(barmode='stack', title_text='Sentiment filtered by DEPU index')
 col1.plotly_chart(fig1, use_container_width=True)
 
 
@@ -180,7 +180,7 @@ fig2 = go.Figure(data=[
 ])
 
 # Change the bar mode
-fig2.update_layout(barmode='stack', title_text='Sentiment of tweets over time DEPUC')
+fig2.update_layout(barmode='stack', title_text='Sentiment filtered by DEPUC index')
 col2.plotly_chart(fig2, use_container_width=True)
 
 
