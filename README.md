@@ -9,6 +9,6 @@ indicators.
 
 The database includes 112.237 tweets from nine media press users from Uruguay and was created using the Twitter API.
 
-The results of the anaylisis can be seen in the following link: https://tweets-media-press.herokuapp.com/ 
+The results can be seen in the following link: https://tweets-media-press.herokuapp.com/ 
 
 This work was presented as the final project of the 4Geeks Academy Machine Learning and Artificial Intelligence bootcamp.
