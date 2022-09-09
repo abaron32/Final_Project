@@ -9,6 +9,7 @@ ipywidgets==7.7.1
 jupyterlab-widgets==1.1.1
 kiwisolver==1.4.4
 matplotlib==3.5.3
+nltk
 numpy==1.23.2
 pandas==1.4.3
 Pillow==9.2.0
@@ -19,6 +20,7 @@ pydeck==0.7.1
 Pympler==1.0.1
 pytz==2022.2.1
 pytz-deprecation-shim==0.1.0.post0
+seaborn
 semver==2.13.0
 streamlit==1.12.0
 tenacity==8.0.1
